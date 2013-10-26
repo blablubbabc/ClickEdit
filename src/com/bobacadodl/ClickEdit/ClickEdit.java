@@ -77,7 +77,7 @@ public class ClickEdit extends JavaPlugin implements Listener {
                 Block b = event.getClickedBlock();
                 if (b != null) {
                 	if (isSign(b)) {
-                		 Sign sign = (Sign) b.getState();
+                         Sign sign = (Sign) b.getState();
                          editSign(sign, p, sign.getLines());
                          // prevent block placing:
                          event.setCancelled(true);
@@ -123,7 +123,7 @@ public class ClickEdit extends JavaPlugin implements Listener {
                                 }
                                 Integer lineInt = getInt(args[1]);
                                 if (lineInt != null) {
-                                	int line = lineInt.intValue();
+                                    int line = lineInt.intValue();
                                     if (line >= 0 && line < 4) {
                                         String text = StringUtils.join(args, ' ', 2, args.length);
                                         Block block = p.getTargetBlock(null, 8);
@@ -166,10 +166,10 @@ public class ClickEdit extends JavaPlugin implements Listener {
 
     public boolean isSign(Block block) {
         if (block != null) {
-        	Material type = block.getType();
-        	if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
-        		return true;
-        	}
+            Material type = block.getType();
+            if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+                return true;
+            }
         }
         return false;
     }
