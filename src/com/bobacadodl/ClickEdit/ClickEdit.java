@@ -76,7 +76,7 @@ public class ClickEdit extends JavaPlugin implements Listener {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && p.isSneaking() && p.hasPermission("clickedit.edit")) {
                 Block b = event.getClickedBlock();
                 if (b != null) {
-                	if (isSign(b)) {
+                    if (isSign(b)) {
                          Sign sign = (Sign) b.getState();
                          editSign(sign, p, sign.getLines());
                          // prevent block placing:
