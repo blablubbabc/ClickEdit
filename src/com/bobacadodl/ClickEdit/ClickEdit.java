@@ -12,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -60,24 +61,27 @@ public class ClickEdit extends JavaPlugin implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         if (event.getPlayer().hasPermission("clickedit.color")) {
-            for (int i = 0; i < event.getLines().length; i++) {
-                event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLines()[i]));
+        	String[] lines = event.getLines();
+            for (int i = 0; i < lines.length; i++) {
+                event.setLine(i, ChatColor.translateAlternateColorCodes('&', lines[i]));
             }
             //TODO add icons/symbols :D
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onSignClick(PlayerInteractEvent event) {
         if (!command_only) {
             Player p = event.getPlayer();
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && p.isSneaking() && p.hasPermission("clickedit.edit")) {
                 Block b = event.getClickedBlock();
                 if (b != null) {
-                    if (b.getState() instanceof Sign) {
-                        Sign sign = (Sign) b.getState();
-                        editSign(sign, p, sign.getLines());
-                    }
+                	if (isSign(b)) {
+                		 Sign sign = (Sign) b.getState();
+                         editSign(sign, p, sign.getLines());
+                         // prevent block placing:
+                         event.setCancelled(true);
+                	}
                 }
             }
         }
@@ -117,8 +121,9 @@ public class ClickEdit extends JavaPlugin implements Listener {
                                     p.sendMessage(ChatColor.RED+"You do not have permission! (clickedit.edit)");
                                     return true;
                                 }
-                                if (isInt(args[1])) {
-                                    int line = Integer.parseInt(args[1]) - 1;
+                                Integer lineInt = getInt(args[1]);
+                                if (lineInt != null) {
+                                	int line = lineInt.intValue();
                                     if (line >= 0 && line < 4) {
                                         String text = StringUtils.join(args, ' ', 2, args.length);
                                         Block block = p.getTargetBlock(null, 8);
@@ -151,20 +156,20 @@ public class ClickEdit extends JavaPlugin implements Listener {
         return false;
     }
 
-    public boolean isInt(String s) {
+    public Integer getInt(String s) {
         try {
-            Integer.parseInt(s);
-            return true;
+            return Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            return false;
+            return null;
         }
     }
 
     public boolean isSign(Block block) {
         if (block != null) {
-            if (block.getState() instanceof Sign) {
-                return true;
-            }
+        	Material type = block.getType();
+        	if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+        		return true;
+        	}
         }
         return false;
     }
